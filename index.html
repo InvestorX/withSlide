@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Q&A P2P</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Main Colors */
+            --color-primary: #ff6b9d;
+            /* Sakura Pink */
+            --color-primary-hover: #ff4785;
+            --color-accent: #00d4ff;
+            /* Neon Blue */
+
+            /* Light Theme (Default) */
+            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ffeef5 50%, #e8f9ff 100%);
+            --bg-card: rgba(255, 255, 255, 0.9);
+            --bg-card-hover: rgba(255, 255, 255, 1);
+            --text-main: #333333;
+            --text-muted: #777777;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.05);
+            --input-bg: #f9f9f9;
+
+            /* Animation */
+            --transition-speed: 0.3s;
+        }
+
+        [data-theme="dark"] {
+            /* Modern Neutral Dark Theme */
+            --bg-gradient: #121212;
+            /* Jet Black / Very Dark Gray */
+            --bg-card: #1e1e1e;
+            /* Material Dark Surface */
+            --bg-card-hover: #252525;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --border-color: #333333;
+            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.4);
+            --input-bg: #2a2a2a;
+            --color-primary: #ff85b3;
+            /* Softer Pink for Dark Mode */
+            --color-accent: #33e1ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+            opacity: 0.5;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-main);
+        }
+
+        /* Global Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+            border: none;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        textarea {
+            font-family: inherit;
+            resize: none;
+        }
+
+        /* App Container */
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Components: Buttons */
+        .btn {
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), #ff4785);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 107, 157, 0.05);
+        }
+
+        [data-theme="dark"] .btn-secondary {
+            background: transparent;
+        }
+
+        .btn-lg {
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            width: 100%;
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg);
+        }
+
+        [data-theme="dark"] .icon-sun {
+            display: block;
+        }
+
+        [data-theme="dark"] .icon-moon {
+            display: none;
+        }
+
+        [data-theme="light"] .icon-sun {
+            display: none;
+        }
+
+        [data-theme="light"] .icon-moon {
+            display: block;
+        }
+
+        /* Welcome Screen */
+        .welcome-card {
+            margin: auto;
+            text-align: center;
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .logo-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .accent-text {
+            color: var(--color-primary);
+            background: linear-gradient(120deg, var(--color-primary), var(--color-accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .role-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Signaling & Modal */
+        .signaling-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            margin-top: 40px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: transparent;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .btn-back {
+            background: transparent;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            padding: 0 10px;
+        }
+
+        .btn-back:hover {
+            color: var(--color-primary);
+        }
+
+        .step-item {
+            margin-bottom: 30px;
+            border-left: 3px solid var(--color-accent);
+            padding-left: 20px;
+        }
+
+        .step-number {
+            display: none;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        textarea.readonly,
+        textarea[readonly] {
+            background-color: var(--input-bg);
+            color: var(--text-muted);
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+
+        .copy-area {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .copy-area textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-main);
+        }
+
+        #btn-copy-host-sdp,
+        #btn-copy-guest-sdp,
+        #btn-copy-invite-sdp {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+        }
+
+        #host-remote-sdp-input,
+        #guest-remote-sdp-input,
+        #invite-remote-sdp-input {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-main);
+            margin-bottom: 15px;
+        }
+
+        #host-remote-sdp-input:focus,
+        #guest-remote-sdp-input:focus,
+        #invite-remote-sdp-input:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Dashboard */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0 20px;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .header-left,
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-success {
+            display: inline-block;
+            background: rgba(0, 212, 255, 0.15);
+            color: #009abb;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 50px;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+
+        [data-theme="dark"] .badge-success {
+            background: rgba(51, 225, 255, 0.2);
+            color: var(--color-accent);
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-main);
+        }
+
+        .btn-icon span {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-icon:hover {
+            background: var(--input-bg);
+        }
+
+        /* Question Input */
+        .input-section {
+            position: sticky;
+            top: 5px;
+            z-index: 10;
+            margin-bottom: 20px;
+        }
+
+        .input-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        #question-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--text-main);
+            outline: none;
+            min-height: 60px;
+        }
+
+        #question-input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .input-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .char-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* [NEW] Teams-style Emoji Picker */
+        .emoji-picker-container {
+            position: absolute;
+            top: 110%;
+            /* Below input */
+            left: 0;
+            z-index: 100;
+            background: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            width: 350px;
+            /* Slightly wider for more tabs */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .emoji-tabs {
+            display: flex;
+            background: var(--input-bg);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            /* Allow horizontal scroll */
+            scrollbar-width: none;
+            /* Firefox */
+        }
+
+        .emoji-tabs::-webkit-scrollbar {
+            display: none;
+            /* Chrome/Safari */
+        }
+
+        .emoji-tab {
+            flex: 0 0 auto;
+            /* Don't shrink */
+            padding: 8px 12px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+            border-bottom: 2px solid transparent;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .emoji-tab:hover {
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .emoji-tab.active {
+            border-bottom-color: var(--color-primary);
+            opacity: 1;
+            color: var(--color-primary);
+        }
+
+        [data-theme="dark"] .emoji-tab:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .emoji-content {
+            height: 220px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .emoji-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            /* More dense */
+            gap: 2px;
+        }
+
+        .emoji-btn {
+            font-size: 1.4rem;
+            padding: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            background: transparent;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji-btn:hover {
+            background: var(--input-bg);
+            transform: scale(1.1);
+        }
+
+        /* Tabs (Main) */
+        .tabs-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 8px 4px;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-main);
+        }
+
+        /* Question List */
+        .questions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 40px;
+        }
+
+        .question-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .question-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(255, 107, 157, 0.3);
+        }
+
+        /* [NEW] Answered Status Styles */
+        .question-card.answered {
+            opacity: 0.6;
+            background-color: var(--input-bg);
+            border-color: transparent;
+            box-shadow: none;
+        }
+
+        .question-card.answered .question-text {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .badge-answered {
+            background-color: #22c55e;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            display: inline-block;
+            text-decoration: none !important;
+        }
+
+        .question-content {
+            flex: 1;
+        }
+
+        .question-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .question-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .question-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn-like {
+            background: var(--input-bg);
+            border-radius: 8px;
+            padding: 6px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 48px;
+        }
+
+        .btn-like:hover {
+            background: rgba(255, 107, 157, 0.1);
+            color: var(--color-primary);
+        }
+
+        .btn-like.liked {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .like-count {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 10px;
+            }
+
+            .welcome-card {
+                padding: 24px;
+            }
+
+            .logo-title {
+                font-size: 2rem;
+            }
+
+            .desktop-only {
+                display: none;
+            }
+
+            .emoji-picker-container {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Dark Mode Toggle -->
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="app-container">
+
+        <!-- SECTION: Welcome Screen -->
+        <section id="welcome-screen" class="screen active">
+            <div class="welcome-card">
+                <h1 class="logo-title">Q&A <span class="accent-text">P2P</span></h1>
+                <p class="subtitle">サーバーレス・匿名・リアルタイム</p>
+
+                <div class="role-selection">
+                    <button id="btn-host" class="btn btn-primary btn-lg">
+                        <span class="btn-icon">🎤</span> ホストとして開始
+                    </button>
+                    <button id="btn-guest" class="btn btn-secondary btn-lg">
+                        <span class="btn-icon">🙋</span> ゲストとして参加
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Signaling (Connection Setup) -->
+        <section id="signaling-screen" class="screen hidden">
+            <div class="card signaling-card">
+                <header class="card-header">
+                    <button class="btn-back" id="btn-back-signaling">←</button>
+                    <h2>接続設定</h2>
+                </header>
+
+                <div class="tabs-container" style="justify-content: center; border-bottom: none; margin-bottom: 20px;">
+                    <button id="tab-signaling-auto" class="btn btn-sm btn-primary active"
+                        style="border-radius: 20px 0 0 20px;">自動 (推奨)</button>
+                    <button id="tab-signaling-manual" class="btn btn-sm btn-outline"
+                        style="border-radius: 0 20px 20px 0;">手動 (コピペ)</button>
+                </div>
+
+                <!-- AUTO PANEL -->
+                <div id="panel-signaling-auto">
+                    <div class="step-container" style="text-align: center; padding: 20px;">
+                        <div id="host-auto-area" class="hidden">
+                            <!-- Step 1: IP Input -->
+                            <div id="host-ip-input-area">
+                                <h3 style="margin-bottom: 10px;">サーバーIPアドレスを入力</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                                    シグナリングサーバーを起動しているPCのIPを入力</p>
+                                <input type="text" id="host-server-ip-input" placeholder="例: 192.168.1.100"
+                                    style="font-size: 1.2rem; text-align: center; width: 220px; padding: 10px; border-radius: 12px; border: 2px solid var(--border-color); margin: 15px 0;">
+                                <br>
+                                <button id="btn-host-start-signaling" class="btn btn-primary btn-lg">開始</button>
+                            </div>
+
+                            <!-- Step 2: Connection Info Display (shown after Start) -->
+                            <div id="host-connection-info-area" class="hidden">
+                                <h3 style="margin-bottom: 10px;">あなたの接続情報</h3>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--color-primary); letter-spacing: 2px; margin: 20px 0; word-break: break-all;"
+                                    id="host-room-id-display">
+                                    ---
+                                </div>
+                                <button id="btn-copy-room-info" class="btn btn-outline" style="margin-bottom: 15px;">📋
+                                    コピー</button>
+                                <p>この情報をゲストに教えてください。</p>
+                                <div style="margin-top: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                                    ゲストの接続を待機中...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="guest-auto-area" class="hidden">
+                            <h3 style="margin-bottom: 10px;">接続情報を入力</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+                                ホストから受け取った「IPアドレス:ルームID」を入力</p>
+                            <input type="text" id="guest-connection-input" placeholder="例: 192.168.1.10:1234"
+                                style="font-size: 1.3rem; text-align: center; width: 280px; padding: 12px; border-radius: 12px; border: 2px solid var(--border-color); margin: 15px 0;">
+                            <br>
+                            <button id="btn-guest-auto-connect" class="btn btn-primary btn-lg">接続開始</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MANUAL PANEL -->
+                <div id="panel-signaling-manual" class="hidden">
+                    <div class="step-container">
+                        <!-- Host Steps -->
+                        <div id="host-steps" class="hidden">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-content">
+                                    <h3>あなたの情報をコピー</h3>
+                                    <p>以下のテキストをコピーして、ゲストに送ってください。</p>
+                                    <div class="copy-area">
+                                        <textarea id="host-sdp-display" readonly></textarea>
+                                        <button class="btn btn-sm btn-outline" id="btn-copy-host-sdp">コピー</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-content">
+                                    <h3>ゲストの情報を入力</h3>
+                                    <p>ゲストから送られてきたテキストをここに貼り付けてください。</p>
+                                    <textarea id="host-remote-sdp-input" placeholder="ゲストのSDPを貼り付け..."></textarea>
+                                    <button id="btn-host-connect" class="btn btn-primary btn-block">接続完了</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Guest Steps -->
+                        <div id="guest-steps" class="hidden">
+                            <div class="step-item">
+                                <span class="step-number">1</span>
+                                <div class="step-content">
+                                    <h3>ホストの情報を入力</h3>
+                                    <p>ホストから受け取ったテキストを貼り付けてください。</p>
+                                    <textarea id="guest-remote-sdp-input" placeholder="ホストのSDPを貼り付け..."></textarea>
+                                </div>
+                            </div>
+                            <div class="step-item">
+                                <span class="step-number">2</span>
+                                <div class="step-content">
+                                    <h3>あなたの情報をコピー</h3>
+                                    <p>以下のテキストをコピーして、ホストに送り返してください。</p>
+                                    <div class="copy-area">
+                                        <textarea id="guest-sdp-display" readonly></textarea>
+                                        <button class="btn btn-sm btn-outline" id="btn-copy-guest-sdp">コピー</button>
+                                    </div>
+                                    <button id="btn-guest-connect-ready" class="btn btn-primary btn-block">準備完了</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: Main Dashboard -->
+        <section id="dashboard-screen" class="screen hidden">
+            <header class="app-header">
+                <div class="header-left">
+                    <h2 class="header-title">Q&A</h2>
+                    <span class="connection-status badge badge-success">● Live</span>
+                </div>
+                <div class="header-right">
+                    <button id="btn-invite-guest" class="btn btn-icon hidden" title="参加者を招待">
+                        ➕ <span class="desktop-only">招待</span>
+                    </button>
+                    <button id="btn-import-json" class="btn btn-icon" title="JSON読込">
+                        📂 <span class="desktop-only">読込</span>
+                    </button>
+                    <input type="file" id="import-file-input" accept=".json" style="display:none">
+
+                    <button id="btn-export-json" class="btn btn-icon" title="JSON保存">
+                        ⬇️ <span class="desktop-only">保存</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="main-layout">
+                <!-- Question Input (Sticky Top) -->
+                <div class="input-section">
+                    <div class="input-card">
+                        <textarea id="question-input" placeholder="匿名で質問を入力..." rows="2"></textarea>
+
+                        <!-- Teams-style Emoji Picker -->
+                        <div id="emoji-picker" class="emoji-picker-container hidden">
+                            <div class="emoji-tabs">
+                                <div class="emoji-tab" data-category="History" title="履歴">🕒</div>
+                                <div class="emoji-tab active" data-category="Faces" title="スマイリー">😀</div>
+                                <div class="emoji-tab" data-category="People" title="人・体">👥</div>
+                                <div class="emoji-tab" data-category="Animals" title="動物・自然">🐻</div>
+                                <div class="emoji-tab" data-category="Food" title="食べ物">🍔</div>
+                                <div class="emoji-tab" data-category="Travel" title="旅行・乗り物">✈️</div>
+                                <div class="emoji-tab" data-category="Activities" title="活動">⚽</div>
+                                <div class="emoji-tab" data-category="Objects" title="物">💡</div>
+                                <div class="emoji-tab" data-category="Gestures" title="ハンドサイン">👋</div>
+                                <div class="emoji-tab" data-category="Symbols" title="記号">❤️</div>
+                            </div>
+                            <div class="emoji-content">
+                                <div id="emoji-grid" class="emoji-grid">
+                                    <!-- Initial Render -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-actions">
+                            <div class="input-left">
+                                <button id="btn-toggle-emoji" class="btn-icon" title="絵文字">😊</button>
+                                <span class="char-count">0/200</span>
+                            </div>
+                            <button id="btn-post-question" class="btn btn-primary" disabled>送信</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-tab="popular">人気順</button>
+                    <button class="tab-btn" data-tab="recent">新着順</button>
+                </div>
+
+                <!-- Question List -->
+                <div id="questions-list" class="questions-list">
+                    <!-- Template for Question Code -->
+                    <template id="question-template">
+                        <div class="question-card">
+                            <div class="question-content">
+                                <p class="question-text"></p>
+                                <div class="question-meta">
+                                    <span class="question-time"></span>
+                                </div>
+                            </div>
+                            <div class="question-actions">
+                                <button class="btn-like">
+                                    <span class="like-icon">👍</span>
+                                    <span class="like-count">0</span>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <p>まだ質問はありません。<br>最初の質問を投稿しましょう！</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Invite Modal -->
+    <div id="invite-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>新規参加者を招待</h3>
+                <button id="btn-close-invite" class="modal-close">×</button>
+            </div>
+
+            <div class="tabs-container" style="justify-content: center; border-bottom: none; margin-bottom: 20px;">
+                <button id="tab-invite-auto" class="btn btn-sm btn-primary active"
+                    style="border-radius: 20px 0 0 20px;">自動 (推奨)</button>
+                <button id="tab-invite-manual" class="btn btn-sm btn-outline" style="border-radius: 0 20px 20px 0;">手動
+                    (コピペ)</button>
+            </div>
+
+            <!-- AUTO INVITE PANEL -->
+            <div id="panel-invite-auto" style="text-align: center; padding: 20px;">
+                <h3 style="margin-bottom: 10px;">あなたの接続情報</h3>
+                <div style="font-size: 2rem; font-weight: 800; color: var(--color-primary); letter-spacing: 2px; margin: 20px 0; word-break: break-all;"
+                    id="invite-room-id-display">
+                    ----
+                </div>
+                <button id="btn-copy-invite-room-info" class="btn btn-outline" style="margin-bottom: 15px;">📋
+                    コピー</button>
+                <p>この情報を新しいゲストに教えてください。</p>
+                <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">
+                    ゲストは「自動接続」でこの情報を入力するだけで参加できます。</p>
+            </div>
+
+            <!-- MANUAL INVITE PANEL -->
+            <div id="panel-invite-manual" class="hidden">
+                <div class="step-container">
+                    <div class="step-item">
+                        <div class="step-content">
+                            <h3>1. あなたの情報をコピー</h3>
+                            <p>このコードを新しいゲストに送ってください。</p>
+                            <div class="copy-area">
+                                <textarea id="invite-sdp-display" readonly></textarea>
+                                <button class="btn btn-sm btn-outline" id="btn-copy-invite-sdp">コピー</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-content">
+                            <h3>2. ゲストの情報を入力</h3>
+                            <p>ゲストから返送されたコードを貼り付けてください。</p>
+                            <textarea id="invite-remote-sdp-input" placeholder="ゲストのSDPを貼り付け..."></textarea>
+                            <button id="btn-invite-connect" class="btn btn-primary btn-block">接続追加</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*******************************************************
+         * APP STATE & CONSTANTS
+         *******************************************************/
+        const EVENT_STATE_UPDATED = 'state-updated';
+
+        class AppState extends EventTarget {
+            constructor() {
+                super();
+                this.data = { questions: [] };
+            }
+
+            getQuestions() { return this.data.questions; }
+            syncState(newState) { this.data = newState; this.notify(); }
+
+            importData(jsonString) {
+                try {
+                    const parsed = JSON.parse(jsonString);
+                    if (parsed.questions && Array.isArray(parsed.questions)) {
+                        const newQuestions = parsed.questions;
+                        const validQuestions = newQuestions.filter(q => q.id && q.text);
+                        const existingIds = new Set(this.data.questions.map(q => q.id));
+                        validQuestions.forEach(q => {
+                            if (!existingIds.has(q.id)) {
+                                this.data.questions.push(q);
+                            }
+                        });
+                        this.notify();
+                        return true;
+                    }
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            addQuestion(text) {
+                const newQuestion = {
+                    id: crypto.randomUUID(),
+                    text: text,
+                    likes: 0,
+                    isAnswered: false,
+                    timestamp: Date.now()
+                };
+                this.data.questions.push(newQuestion);
+                this.notify();
+                return newQuestion;
+            }
+
+            likeQuestion(questionId) {
+                const question = this.data.questions.find(q => q.id === questionId);
+                if (question) {
+                    question.likes++;
+                    this.notify();
+                }
+            }
+
+            toggleAnswered(questionId) {
+                const question = this.data.questions.find(q => q.id === questionId);
+                if (question) {
+                    question.isAnswered = !question.isAnswered;
+                    this.notify();
+                }
+            }
+
+            exportData() {
+                return {
+                    sessionDate: new Date().toISOString(),
+                    questions: this.data.questions
+                };
+            }
+
+            notify() {
+                this.dispatchEvent(new CustomEvent(EVENT_STATE_UPDATED, { detail: this.data }));
+            }
+        }
+
+        const appState = new AppState();
+
+        /*******************************************************
+         * SIGNALING CLIENT (WebSocket)
+         *******************************************************/
+        /**
+         * Gets signaling server URL from input field or uses defaults.
+         * @returns {string} WebSocket URL for signaling server.
+         */
+        function getSignalingServerUrl() {
+            const ipInput = document.getElementById('signaling-server-ip');
+            const ip = ipInput && ipInput.value.trim() ? ipInput.value.trim() : (location.hostname || 'localhost');
+            return `ws://${ip}:8765`;
+        }
+
+        class SignalingClient {
+            constructor(url) {
+                this.url = url || getSignalingServerUrl();
+                this.ws = null;
+                this.onMessage = null;
+                this.onOpen = null;
+            }
+
+            connect(roomId) {
+                this.ws = new WebSocket(this.url);
+                this.ws.onopen = () => {
+                    console.log("WS Connected");
+                    this.ws.send(JSON.stringify({ type: "join", roomId: roomId }));
+                    if (this.onOpen) this.onOpen();
+                };
+                this.ws.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    if (this.onMessage) this.onMessage(msg);
+                };
+                this.ws.onerror = (e) => {
+                    console.error("WS Error", e);
+                    alert("シグナリングサーバへの接続に失敗しました。server.py が起動しているか確認してください。");
+                };
+            }
+
+            send(data) {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(JSON.stringify(data));
+                }
+            }
+        }
+
+        /*******************************************************
+         * HOST Logic
+         *******************************************************/
+        class HostConnectionManager {
+            constructor() {
+                this.peers = new Map();
+                this.dataChannels = [];
+                this.pendingPC = null; // For manual or single pending invite
+                this.signaling = null; // For auto signaling
+            }
+
+            // --- Manual Flow & Base ---
+            async createOfferForUI() {
+                const pc = this._createPC();
+                this.pendingPC = pc;
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                // Wait for ICE gathering to complete (Vanilla ICE for manual copy-paste safety)
+                return new Promise((resolve) => {
+                    if (pc.iceGatheringState === 'complete') {
+                        resolve(JSON.stringify(pc.localDescription));
+                    } else {
+                        const checkIce = () => {
+                            if (pc.iceGatheringState === 'complete') {
+                                pc.removeEventListener('icegatheringstatechange', checkIce);
+                                resolve(JSON.stringify(pc.localDescription));
+                            }
+                        };
+                        pc.addEventListener('icegatheringstatechange', checkIce);
+                        // Fallback timeout just in case
+                        setTimeout(() => resolve(JSON.stringify(pc.localDescription)), 2000);
+                    }
+                });
+            }
+
+            async handleAnswer(answerSDP) {
+                if (!this.pendingPC) throw new Error("No pending connection request found.");
+                const answer = JSON.parse(answerSDP);
+                await this.pendingPC.setRemoteDescription(answer);
+                const pcId = crypto.randomUUID();
+                this.peers.set(pcId, { pc: this.pendingPC });
+                this.pendingPC = null;
+            }
+
+            // --- Auto Signaling Flow ---
+            startAutoSignaling(roomId, wsUrl) {
+                this.signaling = new SignalingClient(wsUrl);
+                this.signaling.onMessage = (msg) => this._handleSignalingMessage(msg);
+                this.signaling.connect(roomId);
+
+                // Immediately create a PC and send Offer for any new joiner? 
+                // In this simple star topology, Host waits for "Join" or just broadcasts Offer?
+                // Actually, typically Host sends Offer when a Guest joins. 
+                // But simplified: Host creates an Offer and sends it.
+                // Or better: Wait for Guest to say "hello"? 
+                // Let's implement: Host creates Offer immediately and broadcasts it? 
+                // No, Offer is for specific peer. 
+                // Modification: In simple relay without specific target ID, 
+                // sending Offer to "everyone" might cause collision if multiple guests.
+                // For this demo: Host sends Offer. Guest receives Offer. 
+                // But we need a fresh PC for each guest.
+
+                // Strategy: Host behaves as "Passive" initially? No, WebRTC usually requires Offerer.
+                // Let's make Host valid to receive connections?
+                // Actually, better flow for Host-Guest 1:N:
+                // 1. Guest joins room. Sends {type: 'request_offer'} (new type).
+                // 2. Host receives 'request_offer'. Creates new PC. Sends 'offer'.
+                // 3. Guest receives 'offer'. Sends 'answer'.
+                // 4. Host receives 'answer'. Connects.
+
+                // Since I can't easily change Guest logic perfectly without testing, 
+                // Let's try: Host broadcasts Offer periodically? No.
+                // Let's implement 'request_offer' trigger from Guest.
+            }
+
+            async _handleSignalingMessage(msg) {
+                if (msg.type === 'request_offer') {
+                    const pc = this._createPC();
+                    const reqId = msg.reqId;
+
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+
+                    const sendOffer = () => {
+                        this.signaling.send({ type: 'offer', sdp: JSON.stringify(pc.localDescription), reqId: reqId });
+                        this.peers.set(reqId, { pc: pc });
+                    };
+
+                    // Wait for ICE gathering to complete (Manual logic style for robustness)
+                    if (pc.iceGatheringState === 'complete') {
+                        sendOffer();
+                    } else {
+                        const checkIce = () => {
+                            if (pc.iceGatheringState === 'complete') {
+                                pc.removeEventListener('icegatheringstatechange', checkIce);
+                                sendOffer();
+                            }
+                        };
+                        pc.addEventListener('icegatheringstatechange', checkIce);
+                        // Fallback timeout
+                        setTimeout(() => {
+                            if (pc.connectionState !== 'connected') sendOffer();
+                        }, 2000);
+                    }
+                }
+                else if (msg.type === 'answer') {
+                    const reqId = msg.reqId;
+                    const peer = this.peers.get(reqId);
+                    if (peer && peer.pc) {
+                        await peer.pc.setRemoteDescription(JSON.parse(msg.sdp));
+                    }
+                }
+            }
+
+            _createPC() {
+                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                const channel = pc.createDataChannel("qa-channel");
+                this.setupChannel(channel);
+
+                // ICE Handling for Auto Mode (trickle) - if we wanted supports it.
+                // For now, allow default behavior (gathering).
+                return pc;
+            }
+
+            setupChannel(channel) {
+                channel.onopen = () => {
+                    this.dataChannels.push(channel);
+                    channel.send(JSON.stringify({ type: 'UPDATE_STATE', payload: appState.data }));
+                    // Transition Host to Dashboard on first connection
+                    showView('dashboard');
+                    renderQuestions();
+                };
+                channel.onmessage = (event) => this.handleMessage(event);
+            }
+
+            handleMessage(event) {
+                const msg = JSON.parse(event.data);
+                if (msg.type === 'POST_QUESTION') {
+                    appState.addQuestion(msg.payload.text);
+                    this.broadcastState();
+                } else if (msg.type === 'LIKE_QUESTION') {
+                    appState.likeQuestion(msg.payload.id);
+                    this.broadcastState();
+                }
+            }
+
+            broadcastState() {
+                const msg = JSON.stringify({ type: 'UPDATE_STATE', payload: appState.data });
+                // Filter closed channels
+                this.dataChannels = this.dataChannels.filter(ch => ch.readyState === 'open');
+                this.dataChannels.forEach(ch => ch.send(msg));
+            }
+        }
+
+        /*******************************************************
+         * GUEST Logic
+         *******************************************************/
+        class GuestConnectionManager {
+            constructor() {
+                this.pc = null;
+                this.channel = null;
+                this.signaling = null;
+            }
+
+            // --- Manual Flow ---
+            async handleOffer(offerSDP) {
+                this.pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                this.pc.ondatachannel = (event) => this.setupChannel(event.channel);
+                const offer = JSON.parse(offerSDP);
+                await this.pc.setRemoteDescription(offer);
+                const answer = await this.pc.createAnswer();
+                await this.pc.setLocalDescription(answer);
+                return new Promise((resolve) => {
+                    // Wait for ICE for manual mod
+                    const checkIce = () => {
+                        if (this.pc.iceGatheringState === 'complete') {
+                            this.pc.removeEventListener('icegatheringstatechange', checkIce);
+                            resolve(JSON.stringify(this.pc.localDescription));
+                        }
+                    };
+                    if (this.pc.iceGatheringState === 'complete') resolve(JSON.stringify(this.pc.localDescription));
+                    else {
+                        this.pc.addEventListener('icegatheringstatechange', checkIce);
+                        setTimeout(() => resolve(JSON.stringify(this.pc.localDescription)), 2000);
+                    }
+                });
+            }
+
+            // --- Auto Signaling Flow ---
+            startAutoSignaling(roomId, wsUrl) {
+                this.signaling = new SignalingClient(wsUrl);
+                this.signaling.onOpen = () => {
+                    // Send Request for Offer
+                    const reqId = crypto.randomUUID();
+                    this.reqId = reqId; // Store my request ID
+                    this.signaling.send({ type: 'request_offer', reqId: reqId });
+                };
+                this.signaling.onMessage = (msg) => this._handleSignalingMessage(msg);
+                this.signaling.connect(roomId);
+            }
+
+            async _handleSignalingMessage(msg) {
+                if (msg.type === 'offer' && msg.reqId === this.reqId) {
+                    this.pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                    this.pc.ondatachannel = (event) => this.setupChannel(event.channel);
+
+                    await this.pc.setRemoteDescription(JSON.parse(msg.sdp));
+                    const answer = await this.pc.createAnswer();
+                    await this.pc.setLocalDescription(answer);
+
+                    // Send Answer back via Signaling
+                    // We can wait for ICE or send immediately if using trickle (which we aren't supporting fully yet in server relay logic details, 
+                    // but simplest is to wait a bit or use OnIceCandidate).
+                    // For robustness/simplicity, let's wait for ICE complete again or short timeout
+                    const checkIce = () => {
+                        if (this.pc.iceGatheringState === 'complete') {
+                            this.pc.removeEventListener('icegatheringstatechange', checkIce);
+                            this.signaling.send({ type: 'answer', sdp: JSON.stringify(this.pc.localDescription), reqId: this.reqId });
+                        }
+                    };
+                    if (this.pc.iceGatheringState === 'complete') {
+                        this.signaling.send({ type: 'answer', sdp: JSON.stringify(this.pc.localDescription), reqId: this.reqId });
+                    } else {
+                        this.pc.addEventListener('icegatheringstatechange', checkIce);
+                        // Fallback
+                        setTimeout(() => {
+                            if (this.pc.connectionState !== 'connected')
+                                this.signaling.send({ type: 'answer', sdp: JSON.stringify(this.pc.localDescription), reqId: this.reqId });
+                        }, 1000);
+                    }
+                }
+            }
+
+            setupChannel(channel) {
+                this.channel = channel;
+                this.channel.onmessage = (event) => {
+                    const msg = JSON.parse(event.data);
+                    if (msg.type === 'UPDATE_STATE') {
+                        appState.syncState(msg.payload);
+                        // If we received state, we are connected!
+                        // Maybe switch view here?
+                        showView('dashboard');
+                        renderQuestions();
+                    }
+                };
+            }
+
+            sendQuestion(text) {
+                if (this.channel && this.channel.readyState === 'open') {
+                    this.channel.send(JSON.stringify({ type: 'POST_QUESTION', payload: { text } }));
+                }
+            }
+
+            sendLike(questionId) {
+                if (this.channel && this.channel.readyState === 'open') {
+                    this.channel.send(JSON.stringify({ type: 'LIKE_QUESTION', payload: { id: questionId } }));
+                }
+            }
+        }
+
+        /*******************************************************
+         * UI Logic
+         *******************************************************/
+        let hostManager = null, guestManager = null, currentRole = null, currentRoomId = null, currentServerIp = null;
+
+        // Theme
+        const toggleBtn = document.getElementById('theme-toggle');
+        const root = document.documentElement;
+        function setTheme(theme) {
+            root.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+        }
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme) setTheme(savedTheme);
+        else setTheme(systemPrefersDark ? 'dark' : 'light');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                const currentTheme = root.getAttribute('data-theme');
+                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
+        }
+
+        // Navigation
+        const views = {
+            welcome: document.getElementById('welcome-screen'),
+            signaling: document.getElementById('signaling-screen'),
+            dashboard: document.getElementById('dashboard-screen')
+        };
+        function showView(viewId) {
+            Object.values(views).forEach(el => el && el.classList.add('hidden'));
+            if (views[viewId]) views[viewId].classList.remove('hidden');
+        }
+
+        // Setup Buttons
+        const btnHost = document.getElementById('btn-host');
+        const btnGuest = document.getElementById('btn-guest');
+        const hostSdpDisplay = document.getElementById('host-sdp-display');
+        const guestSdpDisplay = document.getElementById('guest-sdp-display');
+        const btnInvite = document.getElementById('btn-invite-guest');
+
+        // Signaling UI Tabs
+        const btnTabAuto = document.getElementById('tab-signaling-auto');
+        const btnTabManual = document.getElementById('tab-signaling-manual');
+        const panelAuto = document.getElementById('panel-signaling-auto');
+        const panelManual = document.getElementById('panel-signaling-manual');
+
+        function switchSignalingTab(mode) {
+            if (mode === 'auto') {
+                btnTabAuto.classList.add('active');
+                btnTabManual.classList.remove('active');
+                panelAuto.classList.remove('hidden');
+                panelManual.classList.add('hidden');
+            } else {
+                btnTabAuto.classList.remove('active');
+                btnTabManual.classList.add('active');
+                panelAuto.classList.add('hidden');
+                panelManual.classList.remove('hidden');
+            }
+        }
+        if (btnTabAuto) {
+            btnTabAuto.addEventListener('click', () => switchSignalingTab('auto'));
+            btnTabManual.addEventListener('click', () => switchSignalingTab('manual'));
+        }
+
+        if (btnHost) btnHost.addEventListener('click', async () => {
+            currentRole = 'HOST';
+            hostManager = new HostConnectionManager();
+            btnInvite.classList.add('hidden'); // Hide invite until connected
+            document.getElementById('host-steps').classList.remove('hidden');
+            document.getElementById('guest-steps').classList.add('hidden');
+            showView('signaling');
+
+            // Manual Setup
+            hostSdpDisplay.value = await hostManager.createOfferForUI();
+
+            // Show Host Auto Area with IP Input (Step 1)
+            document.getElementById('host-auto-area').classList.remove('hidden');
+            document.getElementById('guest-auto-area').classList.add('hidden');
+            document.getElementById('host-ip-input-area').classList.remove('hidden');
+            document.getElementById('host-connection-info-area').classList.add('hidden');
+        });
+
+        // Host Start Signaling Button (after IP is entered)
+        const btnHostStartSignaling = document.getElementById('btn-host-start-signaling');
+        if (btnHostStartSignaling) {
+            btnHostStartSignaling.addEventListener('click', () => {
+                const ipInput = document.getElementById('host-server-ip-input').value.trim();
+                if (!ipInput) return alert("サーバーIPアドレスを入力してください");
+
+                currentServerIp = ipInput;
+                const roomId = Math.floor(1000 + Math.random() * 9000);
+                currentRoomId = roomId.toString();
+                const connectionInfo = `${currentServerIp}:${currentRoomId}`;
+                document.getElementById('host-room-id-display').textContent = connectionInfo;
+
+                // Start Auto Signaling with user-specified IP
+                const wsUrl = `ws://${currentServerIp}:8765`;
+                hostManager.startAutoSignaling(currentRoomId, wsUrl);
+
+                // Switch to Connection Info display (Step 2)
+                document.getElementById('host-ip-input-area').classList.add('hidden');
+                document.getElementById('host-connection-info-area').classList.remove('hidden');
+
+                // Show Invite button
+                btnInvite.classList.remove('hidden');
+            });
+        }
+
+        if (btnGuest) btnGuest.addEventListener('click', () => {
+            currentRole = 'GUEST';
+            guestManager = new GuestConnectionManager();
+            btnInvite.classList.add('hidden');
+            document.getElementById('host-steps').classList.add('hidden');
+            document.getElementById('guest-steps').classList.remove('hidden');
+            showView('signaling');
+
+            // UI elements specific to Guest Auto
+            document.getElementById('host-auto-area').classList.add('hidden');
+            document.getElementById('guest-auto-area').classList.remove('hidden');
+        });
+
+        // Auto Connect Button (Guest) - parses IP:RoomID format
+        const btnGuestAutoConnect = document.getElementById('btn-guest-auto-connect');
+        if (btnGuestAutoConnect) {
+            btnGuestAutoConnect.addEventListener('click', () => {
+                const input = document.getElementById('guest-connection-input').value.trim();
+                if (!input) return alert("接続情報を入力してください");
+
+                // Parse IP:RoomID format
+                const parts = input.split(':');
+                if (parts.length !== 2) {
+                    return alert("形式が正しくありません。「192.168.1.10:1234」のように入力してください。");
+                }
+                const serverIp = parts[0];
+                const roomId = parts[1];
+
+                // Create SignalingClient with specified IP
+                const wsUrl = `ws://${serverIp}:8765`;
+                guestManager.startAutoSignaling(roomId, wsUrl);
+                btnGuestAutoConnect.textContent = "接続中...";
+                btnGuestAutoConnect.disabled = true;
+            });
+        }
+
+        // Copy Room Info Button (Host Auto)
+        const btnCopyRoomInfo = document.getElementById('btn-copy-room-info');
+        if (btnCopyRoomInfo) {
+            btnCopyRoomInfo.addEventListener('click', () => {
+                const connectionInfo = document.getElementById('host-room-id-display').textContent;
+                navigator.clipboard.writeText(connectionInfo);
+                alert('コピーしました！');
+            });
+        }
+
+        // Signaling Buttons (Manual)
+        document.getElementById('btn-copy-host-sdp').addEventListener('click', () => {
+            navigator.clipboard.writeText(hostSdpDisplay.value);
+            alert('コピーしました！');
+        });
+        document.getElementById('btn-host-connect').addEventListener('click', async () => {
+            const remoteSdp = document.getElementById('host-remote-sdp-input').value;
+            if (!remoteSdp) return alert('入力してください');
+            try {
+                await hostManager.handleAnswer(remoteSdp);
+                alert('接続成功！');
+                showView('dashboard');
+                renderQuestions();
+            } catch (e) { alert('エラー: ' + e.message); }
+        });
+        document.getElementById('guest-remote-sdp-input').addEventListener('change', async (e) => {
+            try {
+                const answer = await guestManager.handleOffer(e.target.value);
+                guestSdpDisplay.value = answer;
+            } catch (e) { alert("無効なSDP"); }
+        });
+        document.getElementById('btn-copy-guest-sdp').addEventListener('click', () => {
+            navigator.clipboard.writeText(guestSdpDisplay.value);
+            alert('コピーしました！');
+        });
+        document.getElementById('btn-guest-connect-ready').addEventListener('click', () => {
+            showView('dashboard');
+            renderQuestions();
+        });
+        document.getElementById('btn-back-signaling').addEventListener('click', () => showView('welcome'));
+
+        // Invite Flow
+        const inviteModal = document.getElementById('invite-modal');
+        const inviteSdpDisplay = document.getElementById('invite-sdp-display');
+        if (btnInvite) {
+            btnInvite.addEventListener('click', async () => {
+                if (hostManager) {
+                    // Populate Room ID for Auto Tab (IP:RoomID format)
+                    const roomIdDisplay = document.getElementById('invite-room-id-display');
+                    if (currentRoomId && currentServerIp) {
+                        roomIdDisplay.textContent = `${currentServerIp}:${currentRoomId}`;
+                    } else if (currentRoomId) {
+                        roomIdDisplay.textContent = currentRoomId;
+                    } else {
+                        roomIdDisplay.textContent = '(手動接続のみ)';
+                    }
+
+                    // Pre-generate SDP for Manual Tab
+                    inviteSdpDisplay.value = await hostManager.createOfferForUI();
+                    document.getElementById('invite-remote-sdp-input').value = '';
+                    inviteModal.classList.remove('hidden');
+                }
+            });
+        }
+        document.getElementById('btn-close-invite').addEventListener('click', () => inviteModal.classList.add('hidden'));
+        document.getElementById('btn-copy-invite-sdp').addEventListener('click', () => {
+            navigator.clipboard.writeText(inviteSdpDisplay.value);
+            alert('コピーしました！');
+        });
+        document.getElementById('btn-invite-connect').addEventListener('click', async () => {
+            const remoteSdp = document.getElementById('invite-remote-sdp-input').value;
+            try {
+                await hostManager.handleAnswer(remoteSdp);
+                alert('追加接続成功！');
+                inviteModal.classList.add('hidden');
+            } catch (e) { alert('エラー: ' + e.message); }
+        });
+
+        // Copy Room Info Button (Invite Modal)
+        const btnCopyInviteRoomInfo = document.getElementById('btn-copy-invite-room-info');
+        if (btnCopyInviteRoomInfo) {
+            btnCopyInviteRoomInfo.addEventListener('click', () => {
+                const connectionInfo = document.getElementById('invite-room-id-display').textContent;
+                navigator.clipboard.writeText(connectionInfo);
+                alert('コピーしました！');
+            });
+        }
+
+        // Invite Modal Tabs
+        const tabInviteAuto = document.getElementById('tab-invite-auto');
+        const tabInviteManual = document.getElementById('tab-invite-manual');
+        const panelInviteAuto = document.getElementById('panel-invite-auto');
+        const panelInviteManual = document.getElementById('panel-invite-manual');
+        if (tabInviteAuto && tabInviteManual) {
+            tabInviteAuto.addEventListener('click', () => {
+                tabInviteAuto.classList.add('active', 'btn-primary');
+                tabInviteAuto.classList.remove('btn-outline');
+                tabInviteManual.classList.remove('active', 'btn-primary');
+                tabInviteManual.classList.add('btn-outline');
+                panelInviteAuto.classList.remove('hidden');
+                panelInviteManual.classList.add('hidden');
+            });
+            tabInviteManual.addEventListener('click', () => {
+                tabInviteManual.classList.add('active', 'btn-primary');
+                tabInviteManual.classList.remove('btn-outline');
+                tabInviteAuto.classList.remove('active', 'btn-primary');
+                tabInviteAuto.classList.add('btn-outline');
+                panelInviteManual.classList.remove('hidden');
+                panelInviteAuto.classList.add('hidden');
+            });
+        }
+
+
+        // Dashboard & Emojis
+        const questionInput = document.getElementById('question-input');
+        const btnPost = document.getElementById('btn-post-question');
+        const charCount = document.querySelector('.char-count');
+
+        const emojiCategories = {
+            "History": [], // Placeholder for logic
+            "Faces": ["😀", "😃", "😄", "😁", "😆", "😅", "🤣", "😂", "🙂", "🙃", "😉", "😊", "😇", "🥰", "😍", "🤩", "😘", "😗", "😚", "😙", "😋", "😛", "😜", "🤪", "😝", "🤑", "🤗", "🤭", "🤫", "🤔", "🤐", "🤨", "😐", "😑", "😶", "😏", "😒", "🙄", "😬", "🤥", "😌", "😔", "😪", "🤤", "😴", "😷", "🤒", "🤕", "🤢", "🤮", "🤧", "🥵", "🥶", "🥴", "😵", "🤯", "🤠", "🥳", "😎", "🤓", "🧐", "😕", "😟", "🙁", "☹️", "😮", "😯", "😲", "😳", "🥺", "😦", "😧", "😨", "😰", "😥", "😢", "😭", "😱", "😖", "😣", "😞", "😓", "😩", "😫", "🥱", "😤", "😡", "😠", "🤬", "😈", "👿", "💀", "☠️"],
+            "People": ["👶", "🧒", "👦", "👧", "🧑", "👱", "👨", "🧔", "👩", "🧓", "👴", "👵", "🙍", "🙎", "🙅", "🙆", "💁", "🙋", "🙇", "🤦", "🤷", "👨‍⚕️", "👩‍⚕️", "👨‍🎓", "👩‍🎓", "👨‍🏫", "👩‍🏫", "👨‍⚖️", "👩‍⚖️", "👨‍🌾", "👩‍🌾", "👨‍🍳", "👩‍🍳", "👨‍🔧", "👩‍🔧", "👨‍🏭", "👩‍🏭", "👨‍💼", "👩‍💼", "👨‍🔬", "👩‍🔬", "👨‍💻", "👩‍💻", "👨‍🎤", "👩‍🎤", "👨‍🎨", "👩‍🎨", "👨‍✈️", "👩‍✈️", "👨‍🚀", "👩‍🚀", "👨‍🚒", "👩‍🚒", "👮", "🕵️", "💂", "👷", "🤴", "👸", "👳", "👲", "🧕", "🤵", "👰", "🤰", "🤱", "👼", "🎅", "🤶", "🦸", "🦹", "🧙", "🧚", "🧛", "🧜", "🧝", "🧞", "🧟", "💆", "💇", "🚶", "🏃", "💃", "🕺", "🕴️", "👯", "🧖", "🧗", "🧘", "🛀", "🛌", "👤", "👥", "🗣️", "🫂"],
+            "Animals": ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐽", "🐸", "🐵", "🙈", "🙉", "🙊", "🐒", "🐔", "🐧", "🐦", "🐤", "🐣", "🐥", "🦆", "🦅", "🦉", "🦇", "🐺", "🐗", "🐴", "🦄", "🐝", "🐛", "🦋", "🐌", "🐞", "🐜", "🦟", "🦗", "🕷️", "🕸️", "🦂", "🐢", "🐍", "🦎", "🦖", "🦕", "🐙", "🦑", "🦐", "🦞", "🦀", "🐡", "🐠", "🐟", "🐬", "🐳", "🐋", "🦈", "🐊", "🐅", "🐆", "🦓", "🦍", "🦧", "🐘", "🦛", "🦏", "🐪", "🐫", "🦒", "🦘", "🐃", "🐂", "🐄", "🐎", "🐖", "🐏", "🐑", "🦙", "🐐", "🦌", "🐕", "🐩", "🦮", "🐕‍🦺", "🐈", "🐓", "🦃", "🦚", "🦜", "🦢", "🦩", "🕊️", "🐇", "🦝", "🦨", "🦡", "🦦", "🦥", "🐁", "🐀", "🐿️", "🦔"],
+            "Food": ["🍏", "🍎", "🍐", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🍈", "🍒", "🍑", "🥭", "🍍", "🥥", "🥝", "🍅", "🍆", "🥑", "🥦", "🥬", "🥒", "🌶️", "🌽", "🥕", "🧄", "🧅", "🥔", "🍠", "🥐", "🥯", "🍞", "🥖", "🥨", "🧀", "🥚", "🍳", "🧈", "🥞", "🧇", "🥓", "🥩", "🍗", "🍖", "🦴", "🌭", "🍔", "🍟", "🍕", "🥪", "🥙", "🧆", "🌮", "🌯", "🥗", "🥘", "🥫", "🍝", "🍜", "🍲", "🍛", "🍣", "🍱", "🥟", "🦪", "🍤", "🍙", "🍚", "🍘", "🍥", "🥠", "🥮", "🍢", "🍡", "🍧", "🍨", "🍦", "🥧", "🧁", "🍰", "🎂", "🍮", "🍭", "🍬", "🍫", "🍿", "🍩", "🍪", "🌰", "🥜", "🍯", "🥛", "🍼", "☕", "🍵", "🧃", "🥤", "🍶", "🍺", "🍻", "🥂", "🍷", "🥃", "🍸", "🍹", "🧉", "🍾", "🧊", "🥄", "🍴", "🍽️", "🥣", "🥡", "🥢", "🧂"],
+            "Travel": ["🚗", "🚕", "🚙", "🚌", "🚎", "🏎️", "🚓", "🚑", "🚒", "🚐", "🚚", "🚛", "🚜", "🏍️", "🛵", "🦽", "🦼", "🛺", "🚲", "🛴", "🛹", "🚏", "🛣️", "🛤️", "🛢️", "⛽", "🚨", "🚥", "🚦", "🛑", "🚧", "⚓", "⛵", "🛶", "🚤", "🛳️", "⛴️", "🛥️", "🚢", "✈️", "🛩️", "🛫", "🛬", "🪂", "💺", "🚁", "🚟", "🚠", "🚡", "🛰️", "🚀", "🛸", "🛎️", "🧳", "⌛", "⏳", "⌚", "⏰", "⏱️", "⏲️", "🕰️", "🕛", "🕧", "🕐", "🕜", "🕑", "🕝", "🕒", "🕞", "🕓", "🕟", "🕔", "🕠", "🕕", "🕢", "🕖", "🕢", "🕗", "🕣", "🕘", "🕤", "🕙", "🕥", "🕚", "🕦", "🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘", "🌙", "🌚", "🌛", "🌜", "🌡️", "☀️", "🌝", "🌞", "⭐", "🌟", "🌠", "☁️", "⛅", "⛈️", "🌤️", "🌥️", "🌦️", "🌧️", "🌨️", "🌩️", "🌪️", "🌫️", "🌬️", "🌀", "🌈", "🌂", "☂️", "☔", "⛱️", "⚡", "❄️", "☃️", "⛄", "☄️", "🔥", "💧", "🌊"],
+            "Activities": ["⚽", "🏀", "🏈", "⚾", "🥎", "🎾", "🏐", "🏉", "🥏", "🎱", "🪀", "🏓", "🏸", "🏒", "🏑", "🥍", "🏏", "🥅", "⛳", "🪁", "🏹", "🎣", "🤿", "🥊", "🥋", "🎽", "🛹", "🛷", "⛸️", "🥌", "🎿", "⛷️", "🏂", "🪂", "🏋️", "🤼", "🤸", "⛹️", "🤺", "🤾", "🏌️", "🏇", "🧘", "🏄", "🏊", "🤽", "🚣", "🧗", "🚵", "🚴", "🏆", "🥇", "🥈", "🥉", "🏅", "🎖️", "🏵️", "🎗️", "🎫", "🎟️", "🎪", "🤹", "🎭", "🩰", "🎨", "🎬", "🎤", "🎧", "🎼", "🎹", "🥁", "🎷", "🎺", "🎸", "🪕", "🎻", "🎲", "♟️", "🎯", "🎳", "🎮", "🎰", "🧩"],
+            "Objects": ["👓", "🕶️", "🥽", "🥼", "🦺", "👔", "👕", "👖", "🧣", "🧤", "🧥", "🧦", "👗", "👘", "🥻", "🩱", "🩲", "🩳", "👙", "👚", "👛", "👜", "👝", "🛍️", "🎒", "👞", "👟", "🥾", "🥿", "👠", "👡", "👢", "👑", "👒", "🎩", "🎓", "🧢", "⛑️", "📿", "💄", "💍", "💎", "🔇", "🔈", "🔉", "🔊", "📢", "📣", "📯", "🔔", "🔕", "🎼", "🎵", "🎶", "🎙️", "🎚️", "🎛️", "🎤", "🎧", "📻", "🎷", "🎸", "🎹", "🎺", "🎻", "🪕", "🥁", "📱", "📲", "☎️", "📞", "📟", "📠", "🔋", "🔌", "💻", "🖥️", "🖨️", "⌨️", "🖱️", "🖲️", "💽", "💾", "💿", "📀", "🧮", "🎥", "🎞️", "📽️", "🎬", "📺", "📷", "📸", "📹", "📼", "🔍", "🔎", "🕯️", "💡", "🔦", "🏮", "🪔", "📔", "📕", "📖", "📗", "📘", "📙", "📚", "📓", "📒", "📃", "📜", "📄", "📰", "🗞️", "📑", "🔖", "🏷️", "💰", "🪙", "💴", "💵", "💶", "💷", "💸", "💳", "🧾", "✉️", "📧", "📨", "📩", "📤", "📥", "📦", "📫", "📪", "📬", "📭", "📮", "🗳️", "✏️", "✒️", "🖋️", "🖊️", "🖌️", "🖍️", "📝", "💼", "📁", "📂", "🗂️", "📅", "📆", "🗒️", "🗓️", "📇", "📈", "📉", "📊", "📋", "📌", "📍", "📎", "🖇️", "📏", "📐", "✂️", "🗃️", "🗄️", "🗑️", "🔒", "🔓", "🔏", "🔐", "🔑", "🗝️", "🔨", "🪓", "⛏️", "⚒️", "🛠️", "🗡️", "⚔️", "🔫", "🪃", "🏹", "🛡️", "🪚", "🔧", "🪛", "🔩", "⚙️", "🗜️", "⚖️", "🦯", "🔗", "⛓️", "🪝", "🧰", "🧲", "🪜", "⚗️", "🧪", "🧫", "🧬", "🔬", "🔭", "📡", "💉", "🩸", "💊", "🩹", "🩺", "🚪", "🛗", "🪞", "🪟", "🛏️", "🛋️", "🪑", "🚽", "🪠", "🚿", "🛁", "🪤", "🪒", "🧴", "🧷", "🧹", "🧺", "🧻", "🪣", "🧼", "🫧", "🪥", "🧽", "🧯", "🛒", "🚬", "⚰️", "🪦", "⚱️", "🧿", "🪬", "🗿"],
+            "Gestures": ["👋", "🤚", "🖐️", "✋", "🖖", "👌", "🤏", "✌️", "🤞", "🤟", "🤘", "🤙", "👈", "👉", "👆", "👇", "🖕", "👍", "👎", "✊", "👊", "🤛", "🤜", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "✍️", "💅", "🤳", "💪", "🦾", "🦵", "🦿", "🦶", "👀", "👁️", "🧠", "🦷", "🦴", "👃", "👂", "🦻", "👄", "👅"],
+            "Symbols": ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "💟", "☮️", "✝️", "☪️", "🕉️", "☸️", "✡️", "🔯", "🕎", "☯️", "☦️", "🛐", "⛎", "♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓", "🆔", "⚛️", "🉑", "☢️", "☣️", "📴", "📳", "🈶", "🈚", "🈸", "🈺", "🈷️", "✴️", "🆚", "💮", "🉐", "㊙️", "㊗️", "🈴", "🈵", "🈹", "🈲", "🅰️", "🅱️", "🆎", "🆑", "🅾️", "🆘", "❌", "⭕", "🛑", "⛔", "📛", "🚫", "💯", "💢", "♨️", "🚷", "🚯", "🚳", "🚱", "🔞", "📵", "🚭", "❗", "❕", "❓", "❔", "‼️", "⁉️", "🔅", "🔆", "〽️", "⚠️", "🚸", "🔱", "⚜️", "🔰", "♻️", "✅", "🈯", "💹", "❇️", "✳️", "❎", "🌐", "💠", "Ⓜ️", "🌀", "💤", "🏧", "🚾", "♿", "🅿️", "🈳", "🈂️", "🛂", "🛃", "🛄", "🛅", "🚹", "🚺", "🚼", "🚻", "🚮", "🎦", "📶", "🈁", "🔣", "ℹ️", "🔤", "🔡", "🔠", "🆖", "🆗", "🆙", "🆒", "🆕", "🆓", "#️⃣", "*️⃣", "0️⃣", "1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟", "▶️", "⏸️", "⏯️", "⏹️", "⏺️", "⏭️", "⏮️", "⏩", "⏪", "⏫", "⏬", "◀️", "🔼", "🔽", "➡️", "⬅️", "⬆️", "⬇️", "↗️", "↘️", "↙️", "↖️", "↕️", "↔️", "↪️", "↩️", "⤴️", "⤵️", "🔀", "🔁", "🔂", "🔄", "🔃", "🎵", "🎶", "➕", "➖", "➗", "✖️", "💲", "💱", "™️", "©️", "®️", "〰️", "➰", "➿", "🔚", "🔙", "🔛", "🔝", "🔜", "✔️", "☑️", "🔘", "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪", "🟤", "🔺", "🔻", "🔸", "🔹", "🔶", "🔷", "🔳", "🔲", "▪️", "▫️", "◾", "◽", "◼️", "◻️", "🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬛", "⬜", "🟫", "🔈", "🔇", "🔉", "🔊", "🔔", "🔕", "📣", "📢", "👁‍🗨", "💬", "💭", "🗯️", "♠️", "♣️", "♥️", "♦️", "🃏", "🎴", "🀄", "🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛", "🕜", "🕝", "🕞", "🕟", "🕠", "🕡", "🕢", "🕣", "🕤", "🕥", "🕦", "🕧"]
+        };
+
+        const pickerContainer = document.getElementById('emoji-picker');
+        const pickerContent = document.getElementById('emoji-grid');
+        const btnToggleEmoji = document.getElementById('btn-toggle-emoji');
+        const tabs = document.querySelectorAll('.emoji-tab');
+
+        // History Management
+        function loadEmojiHistory() {
+            try {
+                const h = localStorage.getItem('emojiHistory');
+                return h ? JSON.parse(h) : [];
+            } catch (e) { console.error(e); return []; }
+        }
+
+        function saveEmojiHistory(emoji) {
+            try {
+                let h = loadEmojiHistory();
+                h = h.filter(e => e !== emoji); // Remove duplicates
+                h.unshift(emoji); // Add to front
+                if (h.length > 32) h.pop(); // Limit size
+                localStorage.setItem('emojiHistory', JSON.stringify(h));
+            } catch (e) { console.error(e); }
+        }
+
+        function renderEmojiCategory(category) {
+            pickerContent.innerHTML = '';
+            let list = [];
+
+            if (category === 'History') {
+                list = loadEmojiHistory();
+                if (list.length === 0) {
+                    pickerContent.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.9rem;">最近使用した絵文字はありません</div>';
+                    return;
+                }
+            } else {
+                list = emojiCategories[category] || [];
+            }
+
+            list.forEach(emoji => {
+                const btn = document.createElement('button');
+                btn.textContent = emoji;
+                btn.className = 'emoji-btn';
+                btn.addEventListener('click', () => {
+                    questionInput.value += emoji;
+                    questionInput.dispatchEvent(new Event('input'));
+                    saveEmojiHistory(emoji); // Save to history
+                    pickerContainer.classList.add('hidden');
+
+                    // Specific behavior: if we were on history tab, refresh it next time (or immediately if we wanted to stay open)
+                    // For now, picker closes on select, so next open will re-render if history tab is active.
+                });
+                pickerContent.appendChild(btn);
+            });
+        }
+
+        // Tab switching logic
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderEmojiCategory(tab.dataset.category);
+            });
+        });
+
+        // Initialize with History if available, else Faces
+        const historyExists = loadEmojiHistory().length > 0;
+        if (historyExists) {
+            document.querySelector('[data-category="History"]').click();
+        } else {
+            document.querySelector('[data-category="Faces"]').click();
+        }
+
+        btnToggleEmoji.addEventListener('click', () => {
+            pickerContainer.classList.toggle('hidden');
+            // Re-render current active tab to update history if it changed
+            const activeTab = document.querySelector('.emoji-tab.active');
+            if (activeTab && !pickerContainer.classList.contains('hidden')) {
+                renderEmojiCategory(activeTab.dataset.category);
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!pickerContainer.contains(e.target) && !btnToggleEmoji.contains(e.target)) pickerContainer.classList.add('hidden');
+        });
+
+        questionInput.addEventListener('input', (e) => {
+            const len = e.target.value.length;
+            charCount.textContent = `${len}/200`;
+            btnPost.disabled = len === 0;
+        });
+
+        btnPost.addEventListener('click', () => {
+            const text = questionInput.value.trim();
+            if (!text) return;
+            if (currentRole === 'HOST') {
+                appState.addQuestion(text);
+                hostManager.broadcastState();
+            } else if (currentRole === 'GUEST') {
+                guestManager.sendQuestion(text);
+            }
+            questionInput.value = '';
+            charCount.textContent = '0/200';
+            btnPost.disabled = true;
+        });
+
+        // Tab (Questions)
+        document.querySelectorAll('.app-container > #dashboard-screen .tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.dataset.tab) {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentSort = btn.dataset.tab;
+                    renderQuestions();
+                }
+            });
+        });
+
+        // Export/Import
+        if (document.getElementById('btn-export-json')) {
+            document.getElementById('btn-export-json').addEventListener('click', () => {
+                const blob = new Blob([JSON.stringify(appState.exportData(), null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `qa_export.json`;
+                a.click();
+            });
+        }
+        document.getElementById('btn-import-json').addEventListener('click', () => document.getElementById('import-file-input').click());
+        document.getElementById('import-file-input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (appState.importData(ev.target.result)) {
+                    alert('インポート完了');
+                    if (currentRole === 'HOST' && hostManager) hostManager.broadcastState();
+                } else alert('インポート失敗');
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        // Render Questions
+        const questionsList = document.getElementById('questions-list');
+        const template = document.getElementById('question-template');
+        let currentSort = 'popular';
+
+        function timeAgo(ts) {
+            const s = Math.floor((Date.now() - ts) / 1000);
+            if (s < 60) return "たった今";
+            if (s < 3600) return Math.floor(s / 60) + "分前";
+            if (s < 86400) return Math.floor(s / 3600) + "時間前";
+            return Math.floor(s / 86400) + "日前";
+        }
+
+        function renderQuestions() {
+            const qs = [...appState.getQuestions()];
+            if (currentSort === 'popular') qs.sort((a, b) => b.likes - a.likes);
+            else qs.sort((a, b) => b.timestamp - a.timestamp);
+
+            questionsList.innerHTML = '';
+            if (qs.length === 0) {
+                questionsList.innerHTML = `<div class="empty-state"><p>まだ質問はありません。</p></div>`;
+                return;
+            }
+            qs.forEach(q => {
+                const clone = template.content.cloneNode(true);
+                const card = clone.querySelector('.question-card');
+                const txt = clone.querySelector('.question-text');
+
+                txt.textContent = q.text;
+                if (q.isAnswered) {
+                    card.classList.add('answered');
+                    txt.innerHTML = `<span class="badge-answered">回答済</span>` + q.text;
+                }
+
+                if (currentRole === 'HOST') {
+                    card.style.cursor = 'pointer';
+                    card.onclick = (e) => {
+                        if (!e.target.closest('.btn-like')) {
+                            appState.toggleAnswered(q.id);
+                            hostManager.broadcastState();
+                        }
+                    };
+                }
+
+                const d = new Date(q.timestamp);
+                clone.querySelector('.question-time').textContent = `${d.getHours()}:${d.getMinutes().toString().padStart(2, '0')} (${timeAgo(q.timestamp)})`;
+
+                const btnLike = clone.querySelector('.btn-like');
+                clone.querySelector('.like-count').textContent = q.likes;
+                if (q.likes > 0) btnLike.classList.add('liked');
+                btnLike.onclick = (e) => {
+                    e.stopPropagation();
+                    if (currentRole === 'HOST') { appState.likeQuestion(q.id); hostManager.broadcastState(); }
+                    else guestManager.sendLike(q.id);
+                };
+                questionsList.appendChild(clone);
+            });
+        }
+
+        appState.addEventListener(EVENT_STATE_UPDATED, renderQuestions);
+        window.onbeforeunload = (e) => {
+            if (appState.getQuestions().length > 0 && currentRole === 'HOST') e.returnValue = '';
+        };
+
+    </script>
+</body>
+
+</html>
